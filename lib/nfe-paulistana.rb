@@ -11,8 +11,8 @@ module NfePaulistana
   WSDL = 'https://nfe.prefeitura.sp.gov.br/ws/lotenfe.asmx?wsdl'
   Savon.configure do |config|
     config.soap_version = 2
+    config.env_namespace = :soap
   end
-  Savon.env_namespace = :soap
 
   def self.enviar(data = {})
     certificado = OpenSSL::PKCS12.new(File.read(data[:cert_path]), data[:cert_pass]) 
