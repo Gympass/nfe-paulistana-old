@@ -4,8 +4,8 @@ module NfePaulistana
   class Gateway
     Savon.configure do |config|
       config.soap_version = 2
+      config.env_namespace = :soap
     end
-    Savon.env_namespace = :soap
 
     METHODS = {
       envio_rps: "EnvioRPSRequest",
