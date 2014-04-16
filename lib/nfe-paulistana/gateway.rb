@@ -95,7 +95,7 @@ module NfePaulistana
         wsdl.document = @options[:wdsl]
         http.auth.ssl.cert_key = certificado.key
         http.auth.ssl.cert = certificado.certificate
-        http.auth.ssl.verify_mode = :peer
+        http.auth.ssl.verify_mode = :none # :peer
       end
     end
   end
