@@ -92,10 +92,10 @@ module NfePaulistana
 
     def get_client(certificado)
       Savon::Client.new do |wsdl, http|
-        wsdl.document = @options[:wdsl]
         http.auth.ssl.cert_key = certificado.key
         http.auth.ssl.cert = certificado.certificate
         http.auth.ssl.verify_mode = :none # :peer
+        wsdl.document = @options[:wdsl]
       end
     end
   end
