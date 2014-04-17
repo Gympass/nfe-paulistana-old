@@ -76,15 +76,13 @@ module NfePaulistana
 
     def request(method, data = {})
       certificado = certificate
-      client = get_client(certificado)
+      client = get_client(certificado, method)
       response = client.request(method) do |soap|
-        soap.header = {"SOAPAction" => "urn:#{METHODS[method]}"}
         namespaces = {
           "xmlns:soap" => "http://schemas.xmlsoap.org/soap/envelope/",
           "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
           "xmlns:xsd" => "http://www.w3.org/2001/XMLSchema"
         }
-        
         soap.input = [ 
             METHODS[method], 
               {"xmlns" => "http://www.prefeitura.sp.gov.br/nfe"}
@@ -97,12 +95,13 @@ module NfePaulistana
     rescue Savon::Error => error
     end
 
-    def get_client(certificado)
+    def get_client(certificado, method)
       Savon::Client.new do |wsdl, http|
         http.auth.ssl.cert_key = certificado.key
         http.auth.ssl.cert = certificado.certificate
         http.auth.ssl.verify_mode = :none # :peer
         wsdl.document = @options[:wdsl]
+        htpp.headers['SOAPAction'] = "urn:#{METHODS[method]}"
       end
     end
   end
