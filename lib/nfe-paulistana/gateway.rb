@@ -78,7 +78,7 @@ module NfePaulistana
       certificado = certificate
       client = get_client(certificado)
       response = client.request(method) do |soap|
-        soap.http.headers["SOAPAction"] = "urn:#{METHODS[method]}"
+        soap.header = {"SOAPAction" => "urn:#{METHODS[method]}"}
         namespaces = {
           "xmlns:soap" => "http://schemas.xmlsoap.org/soap/envelope/",
           "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
