@@ -101,7 +101,7 @@ module NfePaulistana
         http.auth.ssl.cert = certificado.certificate
         http.auth.ssl.verify_mode = :none # :peer
         wsdl.document = @options[:wdsl]
-        htpp.headers['SOAPAction'] = "urn:#{METHODS[method]}"
+        htpp.headers['SOAPAction'] = "\"urn:#{METHODS[method]}\""
       end
     end
   end
