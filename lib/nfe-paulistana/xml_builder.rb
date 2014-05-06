@@ -203,6 +203,7 @@ module NfePaulistana
 
     def add_rps_to_xml(xml, data, certificado)
       data = DEFAULT_DATA.merge(data)
+      data[:discriminacao] = data[:discriminacao].try(:gsub, "\r\n", "|")
       xml.RPS( :xmlns => "" ) {
         xml.Assinatura assinatura_envio_rps(data, certificado)
         add_chave_rps_to_xml(xml, data)
