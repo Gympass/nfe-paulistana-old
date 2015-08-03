@@ -79,7 +79,7 @@ module NfePaulistana
       client = get_client(certificado)
       response = client.request(method) do |soap|
         soap.header = {"SOAPAction" => "\"urn:#{METHODS[method]}\""}
-        namespaces = {
+        soap.namespaces = {
           "xmlns:soap" => "http://schemas.xmlsoap.org/soap/envelope/",
           "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
           "xmlns:xsd" => "http://www.w3.org/2001/XMLSchema"
@@ -90,7 +90,7 @@ module NfePaulistana
               {"xmlns" => "http://www.prefeitura.sp.gov.br/nfe"}
         ]
         soap.body = XmlBuilder.new.xml_for(method, data, certificado)
-        soap.version = 2
+        soap.version = 1
       end
       method_response = (method.to_s + "_response").to_sym
       Response.new(xml: response.to_hash[method_response][:retorno_xml], method: method)
