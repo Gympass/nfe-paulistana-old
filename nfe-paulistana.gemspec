@@ -20,8 +20,6 @@ Gem::Specification.new do |s|
 
   # specify any dependencies here; for example:
   s.add_dependency "nokogiri"
-  s.add_dependency "savon", "1.2.0"
+  s.add_dependency "savon", "~> 2.11"
   s.add_dependency "signer"
-  s.add_development_dependency "rspec"
-  # s.add_runtime_dependency "rest-client"
 end

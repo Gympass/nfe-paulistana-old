@@ -2,11 +2,6 @@ require 'savon'
 
 module NfePaulistana
   class Gateway
-    Savon.configure do |config|
-      config.soap_version = 2
-      config.env_namespace = :soap
-    end
-
     METHODS = {
       envio_rps: "EnvioRPSRequest",
       envio_lote_rps: "EnvioLoteRPSRequest",
@@ -22,9 +17,9 @@ module NfePaulistana
 
     def initialize(options = {})
       @options = {
-        cert_path: "", 
+        cert_path: "",
         cert_pass: "",
-        wdsl: 'https://nfe.prefeitura.sp.gov.br/ws/lotenfe.asmx?wsdl'
+        wsdl: 'https://nfe.prefeitura.sp.gov.br/ws/lotenfe.asmx?wsdl'
       }.merge(options)
     end
 
@@ -76,34 +71,34 @@ module NfePaulistana
 
     def request(method, data = {})
       certificado = certificate
-      client = get_client(certificado)
-      response = client.request(method) do |soap|
-        soap.header = {"SOAPAction" => "\"urn:#{METHODS[method]}\""}
-        soap.namespaces = {
+      client      = get_client(certificado)
+
+      response = client.call(method, message: {
+        header: { "SOAPAction" => "\"urn:#{METHODS[method]}\"" },
+        namespaces: {
           "xmlns:soap" => "http://schemas.xmlsoap.org/soap/envelope/",
-          "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
-          "xmlns:xsd" => "http://www.w3.org/2001/XMLSchema"
-        }
-        
-        soap.input = [ 
-            METHODS[method], 
-              {"xmlns" => "http://www.prefeitura.sp.gov.br/nfe"}
-        ]
-        soap.body = XmlBuilder.new.xml_for(method, data, certificado)
-        soap.version = 1
-      end
+          "xmlns:xsi"  => "http://www.w3.org/2001/XMLSchema-instance",
+          "xmlns:xsd"  => "http://www.w3.org/2001/XMLSchema"
+        },
+        input: [ METHODS[method], {"xmlns" => "http://www.prefeitura.sp.gov.br/nfe"} ],
+        body:  XmlBuilder.new.xml_for(method, data, certificado),
+        version: 1
+      })
+
       method_response = (method.to_s + "_response").to_sym
       Response.new(xml: response.to_hash[method_response][:retorno_xml], method: method)
     rescue Savon::Error => error
+      error
     end
 
     def get_client(certificado)
-      Savon::Client.new do |wsdl, http|
-        http.auth.ssl.cert_key = certificado.key
-        http.auth.ssl.cert = certificado.certificate
-        http.auth.ssl.verify_mode = :none # :peer
-        wsdl.document = @options[:wdsl]
-      end
+      Savon.client(
+        soap_version: 1,
+        ssl_verify_mode: :peer,
+        wsdl: @options[:wsdl],
+        ssl_cert_key: certificado.key,
+        ssl_cert: certificado.certificate
+      )
     end
   end
 end
